@@ -21,8 +21,8 @@ To use the app follow these steps:
                        -  Downloads the WRS-2 tile extent for the location entered showing the footprint of the Landsat scene passing over the region, under the [Footprint](static/Footprint) folder under static folder of the project directory.
 
 ## **Our Team**
-**Shreyas Goswami** (shreyubhadrawati@gmail.com)
-**Akash Kumar** (akash_k@ce.iitr.ac.in)
-**Nitin Lodhi** (nitinyou039@gmail.com)
-**Amarjeet Kumar Mahato** (amarjeet_km@ce.iitr.ac.in)
+- **Shreyas Goswami** (shreyubhadrawati@gmail.com)
+- **Akash Kumar** (akash_k@ce.iitr.ac.in)
+- **Nitin Lodhi** (nitinyou039@gmail.com)
+- **Amarjeet Kumar Mahato** (amarjeet_km@ce.iitr.ac.in)
    
