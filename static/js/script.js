@@ -478,8 +478,10 @@ async function fetchApi() {
 
 
         populateTable(data.pass_dates_landsat);
-
-        addWmsLayer(data.tile_url);
+        // await loadXML(data.metadata_path)
+        await loadTextFile(data.metadata_path);
+        
+        //addWmsLayer(data.tile_url);
         // Check if responseOutput element exists and update it
         const responseOutput = document.getElementById('responseOutput');
         if (responseOutput) {
@@ -493,7 +495,7 @@ async function fetchApi() {
         } else {
             console.error('Element with ID "responseOutput" not found!');
         }
-        await loadXML(data.metadata_path)
+        
     } catch (error) {
         console.error('Error fetching data:', error);
         const responseOutput = document.getElementById('responseOutput');
@@ -529,41 +531,59 @@ function populateTable(pass_dates_landsat) {
     });
 }
 
-async function loadXML(path) {
-    // const xmlPath = `http://localhost:8000/static/Metadata/mtl.xml`; 
-    // Adjust for Node.js server if necessary
-    console.log('Loading XML from path:', xmlPath);
+async function loadTextFile(path) {
+    // Assuming the path is to a .txt file
+    console.log('Loading text file from path:', path);
     try {
         const response = await fetch(path);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        const xmlText = await response.text();
-        convertXMLToJSON(xmlText);
+        const text = await response.text();
+        // Display the text data in the xmlData div
+        document.getElementById('xmlData').textContent = text;
     } catch (error) {
-        console.error("Error fetching XML file:", error);
-        document.getElementById('xmlData').textContent = 'Error fetching XML file.';
+        console.error("Error fetching text file:", error);
+        document.getElementById('xmlData').textContent = 'Error fetching text file.';
     }
 }
 
-function convertXMLToJSON(xml) {
-    const parser = new Parser();
+// async function loadXML(path) {
+//      const xmlPath = "D:\NASA space apps challenge 2024\Space-Apps\static\Metadata\mtl.xml"; 
+//     // Adjust for Node.js server if necessary
+//     console.log('Loading XML from path:', xmlPath);
+//     try {
+//         const response = await fetch(path);
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! status: ${response.status}`);
+//         }
+        
+//         const xmlText = await response.text();
+//         convertXMLToJSON(xmlText);
+//     } catch (error) {
+//         console.error("Error fetching XML file:", error);
+//         document.getElementById('xmlData').textContent = 'Error fetching XML file.';
+//     }
+// }
+
+// function convertXMLToJSON(xml) {
+//     const parser = new Parser();
     
-    parser.parseString(xml, (err, result) => {
-        if (err) {
-            console.error("Error parsing XML:", err);
-            document.getElementById('xmlData').textContent = 'Error parsing XML file.';
-            return;
-        }
+//     parser.parseString(xml, (err, result) => {
+//         if (err) {
+//             console.error("Error parsing XML:", err);
+//             document.getElementById('xmlData').textContent = 'Error parsing XML file.';
+//             return;
+//         }
         
-        const json = JSON.stringify(result, null, 2);
-        console.log("JSON Output:", json);
+//         const json = JSON.stringify(result, null, 2);
+//         console.log("JSON Output:", json);
         
-        // Optionally, display the JSON in an element on the page
-        document.getElementById('jsonData').textContent = json;
-    });
-}
+//         // Optionally, display the JSON in an element on the page
+//         document.getElementById('jsonData').textContent = json;
+//     });
+// }
 
 
 function plotPixelValues(data) {

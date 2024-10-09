@@ -22,6 +22,11 @@ catalog = pystac_client.Client.open(
 app = Flask(__name__)
 CORS(app, resources={r"/fetch": {"origins": "http://127.0.0.1:5500"}})  # Allow only this specific origin
 
+
+@app.route('/')
+def default_route():
+    return redirect(url_for('index'))
+    
 @app.route('/request/',methods=['POST','GET'])
 def index():
     if request.method == 'POST':
@@ -291,8 +296,9 @@ def index():
 
         import xarray as xr
         import rioxarray
-
-        #xarray_data.rio.write_crs("EPSG:32610", inplace=True)
+        
+        epsg= selected_item.properties['proj:epsg']
+        xarray_data.rio.write_crs(f"EPSG:{epsg}", inplace=True)
         
         # Define the relative path (e.g., "static/images/your_image.tiff")
         relative_path = "static/Image/"
@@ -317,6 +323,7 @@ def index():
 
         def change_crs(input_tif, output_tif, target_crs='EPSG:4326'):
             with rasterio.open(input_tif) as src:
+                print("CRS:", src.crs)
                 # Calculate the transform and dimensions for the target CRS
                 transform, width, height = calculate_default_transform(
                     src.crs, target_crs, src.width, src.height, *src.bounds
@@ -562,7 +569,7 @@ def index():
             'pass_dates_landsat': pass_dates_df_json,
             'pixel_values_landsat': pixel_df_json,
             'tile_url':tile_url,
-            'metadata_path': metadata_path,
+            'metadata_path': selected_item.assets['mtl.txt'].href,
             'latest_pass_date':latest_pass_date,
             'latest_pass_platform':latest_pass_platform
         }
