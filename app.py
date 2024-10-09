@@ -258,7 +258,7 @@ def index():
         # Create a DataFrame
         df = pd.DataFrame({
             'Date': dates,
-            'Time (+/- 00:15:00 hrs)': times,
+            'Time (+/- 00:15:00 hrs in UTC)': times,
             'Platform': platforms
         })
 
