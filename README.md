@@ -14,11 +14,11 @@ To use the app follow these steps:
 6. **Mark the location of your choice on the map**: On opening the app, a map is loaded and you can mark the location of your interest by searching for the location using search bar or by navigating on the map, and clicking on the map.
 7. **Select the cloud cover**: You can select the cloud cover threshold for the image using slider provided.
 8. **Submit the request**: Click on the submit button to send the request. This does the following:
-                       -  Loads the pixel band values represented as a graph
-                       -  Loads the metadata for the latest Landsat scene available within the cloud cover threshold for the location and saves the metadata file as 'mtl.xml' under the [Metadata](static/Metadata/) folder under static folder of the project directory.
-                       -  Loads the table showing the upcoming Landsat-8/9 pass dates and time for the selected region.
-                       -  Downloads the Landsat-8/9 image for a small bounding box spanning (0.05 degrees north-south and 0.05 degrees east-west of the entered coordinates) and creates a 3X3 grid around the coordinates and saves it as "clipped_3x3_polygon.shp" shapefile and "clipped_3x3_image.tiff" raster image in the [Image](static/Image) folder of the repository.
-                       -  Downloads the WRS-2 tile extent for the location entered showing the footprint of the Landsat scene passing over the region, under the [Footprint](static/Footprint) folder under static folder of the project directory.
+   -  Loads the pixel band values represented as a graph
+   -  Loads the metadata for the latest Landsat scene available within the cloud cover threshold for the location and saves the metadata file as 'mtl.xml' under the [Metadata](static/Metadata/) folder under static folder of the project directory.
+   -  Loads the table showing the upcoming Landsat-8/9 pass dates and time for the selected region.
+   -  Downloads the Landsat-8/9 image for a small bounding box spanning (0.05 degrees north-south and 0.05 degrees east-west of the entered coordinates) and creates a 3X3 grid around the coordinates and saves it as "clipped_3x3_polygon.shp" shapefile and "clipped_3x3_image.tiff" raster image in the [Image](static/Image) folder of the repository.
+   -  Downloads the WRS-2 tile extent for the location entered showing the footprint of the Landsat scene passing over the region, under the [Footprint](static/Footprint) folder under static folder of the project directory.
 
 ## **Our Team**
 - **Shreyas Goswami** (shreyubhadrawati@gmail.com)
