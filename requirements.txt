@@ -14,3 +14,4 @@ Requests==2.32.3
 rioxarray==0.17.0
 Shapely==2.0.6
 xarray==2024.9.0
+gunicorn==23.0.0
