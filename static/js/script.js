@@ -461,7 +461,7 @@ async function fetchApi() {
     formData.append('cloud_cover', cloud_cover);
 
     try {
-        const response = await fetch('http://127.0.0.1:7000/request', {
+        const response = await fetch('https://shark-app-rk86g.ondigitalocean.app/request/', {
             method: 'POST',
             body: formData
         });
