@@ -523,7 +523,7 @@ function populateTable(pass_dates_landsat) {
 
         // Create and insert the Time cell
         const timeCell = document.createElement('td');
-        timeCell.textContent = item["Time (+/- 00:15:00 hrs)"];
+        timeCell.textContent = item["Time (+/- 00:15:00 hrs in UTC)"];
         row.appendChild(timeCell);
 
         // Append the row to the table body
