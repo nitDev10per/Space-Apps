@@ -1,4 +1,6 @@
-# - Update: Our app is now deployed at : [Orbital Yatra](https://shark-app-rk86g.ondigitalocean.app/) @@
+# **Update**: Our app is now deployed at : [Orbital Yatra](https://shark-app-rk86g.ondigitalocean.app/) 
+
+## [https://shark-app-rk86g.ondigitalocean.app/](https://shark-app-rk86g.ondigitalocean.app/)
 
 # **Landsat Reflectance Data: On the Fly and at Your Fingertips**
 
