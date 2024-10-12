@@ -35,6 +35,13 @@
 <body>
     <div id="navbar" class="navbar">
         <div class="image">
+            <div class="image" onclick="window.location.reload();">
+                <img src="{{ url_for('static', filename='images/ic_back.png') }}" alt="logo"
+                    style="height: 5vh; width: 5vh; background-color: transparent;">
+            </div>
+
+        </div>
+        <div class="image" style="margin-right: 20px;">
             <div class="image">
                 <img src="{{ url_for('static', filename='images/giphy.webp') }}" alt="logo"
                     style="height: 7vh; width: 7vh; background-color: transparent;">
@@ -61,7 +68,7 @@
                 <input id="search-box" type="text" placeholder="Search location">
             </div>
 
-            <div class="map-controls">
+            <div class="map-controls" id="controler-map">
                 <div id="coordinates" class="coordinates">
                     Click on the map to get Latitude and Longitude.
                 </div>
