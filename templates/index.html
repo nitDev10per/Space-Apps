@@ -5,8 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Space Apps</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xml2js/0.4.23/xml2js.min.js"></script>
+    <style>
+        /* Set the background color of the layer control */
+        .leaflet-control-layers {
+            background: white;
+            /* Change this to your desired background color */
+            color: black;
+            /* Change text color to black */
+        }
+
+        /* Change text color of layer control items */
+        .leaflet-control-layers label {
+            color: black;
+            /* Ensure the label text color is black */
+        }
+
+        /* Optional: Change the color of the checkbox labels */
+        .leaflet-control-layers input[type="checkbox"]+span {
+            color: black;
+            /* Checkbox label color */
+        }
+    </style>
 
 </head>
 
@@ -21,15 +43,24 @@
         </div>
         Orbital Yatra
     </div>
+    <div id="loading">
+        <div class="image">
+            <img src="{{ url_for('static', filename='images/giphy.webp') }}" alt="logo"
+                style="height: 20vh; width: 20vh; background-color: transparent; border-radius: 20px; ">
+
+            <h1 style="font-weight: bold;">Loading...</h1>    
+        </div>
+    </div>
+    
     <div class="content-box">
-        <div id="loading" style="display: none;">Loading...</div>
         <div class="container" id="container">
-            <div id="map" class="map"></div>
-            
+            <div id="maps" class="map"></div>
+            <div id="map"></div>
+
             <div class="map-search">
                 <input id="search-box" type="text" placeholder="Search location">
             </div>
-            
+
             <div class="map-controls">
                 <div id="coordinates" class="coordinates">
                     Click on the map to get Latitude and Longitude.
@@ -39,7 +70,8 @@
 
                 <div class="slider-container">
                     <label for="value-slider">Select preferred Cloud Cover (0 to 1):</label>
-                    <input type="range" id="value-slider" min="0" max="1" step="0.01" value="0" oninput="updateValueDisplay(this.value)">
+                    <input type="range" id="value-slider" min="0" max="1" step="0.01" value="0"
+                        oninput="updateValueDisplay(this.value)">
                     <span id="slider-value">0</span> <!-- Display the selected value -->
                 </div>
             </div>
@@ -47,35 +79,41 @@
                 <!-- <canvas id="lineChart" width="400" height="200" style="margin-left: 20px;"></canvas>  -->
                 <!-- <canvas id="myChart"></canvas> -->
                 <div class="graphDiv">
-                    <h1>Landsat Pixel Band Values</h1>
-                    <canvas id="pixelValuesChart" width="400", height="200"></canvas>
-                 </div>
-                 <div id="responceMetaData" >
-                    <h1>Upcoming Landsat Pass Dates</h1>
+                    <p style="position: sticky; top: 0; text-align: center; font-weight: bold;">Landsat Pixel Band Values</p>
+                    <canvas id="pixelValuesChart" width="400" , height="200"></canvas>
+                </div>
+                <div id="responceMetaData" style="position: relative; ">
+                    <p style="position: sticky; top: 0;  text-align: center; font-weight: bold;">Upcoming Landsat Pass Dates</p>
                     <table>
                         <thead>
-                            <tr>
+                            <tr style="position: sticky; top: 0; background-color: white;">
                                 <th>Date</th>
                                 <th>Platform</th>
-                                <th>Time (+/- 00:15:00 hrs UTC)</th>
+                                <th>Time (+/- 00:15:00 hrs in UTC)</th>
                             </tr>
                         </thead>
                         <tbody id="landsatTableBody">
                         </tbody>
                     </table>
-                 </div>
-                 
-                            </div>
+                </div>
+
+            </div>
         </div>
-        <div class="reight-content-box" id="right-box">
-            <h1>Landsat Metadata<span style="position: absolute; top: 20px; right: 20px;"><button
-                        class="button">Download</button></span></h1>
-                        <div id=""></div>
-                        <div id="xmlData" class="xml-display">
-                            Loading data...
-                        </div>
+        <div class="reight-content-box" id="right-box" style="position: relative;">
+            <div style="display: flex; justify-content: center; position: sticky; top: 0; right: 0; background-color: white; align-items: center; gap: 30px;">
+                <h1  >Landsat Metadata</h1>
+                <img 
+                    style=" height: 50px; width: 50px;"
+                    src="{{ url_for('static', filename='images/ic_download.jpg') }}"
+                    >
+            </div>
+           
+            <div id=""></div>
+            <div id="xmlData" class="xml-display">
+                Loading data...
+            </div>
         </div>
-       
+
 
     </div>
 
@@ -90,44 +128,16 @@
         </script>
     <!--  -->
     <!-- Your script file -->
-    
+
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
-    <!-- Script to initialize the chart -->
-    <!-- <script>
-        // Function to initialize the chart with default data
-        function renderChart() {
-            const ctx = document.getElementById('lineChart').getContext('2d');
-            const lineChart = new Chart(ctx, {
-                type: 'line', // Chart type: Line chart
-                data: {
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'], // X-axis labels
-                    datasets: [{
-                        label: 'Orbital Altitude (km)',
-                        data: [100, 200, 150, 300, 250, 400, 350], // Y-axis values
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)', // Line background color (fill)
-                        borderColor: 'rgba(75, 192, 192, 1)', // Line border color
-                        borderWidth: 2, // Line width
-                        fill: true // Fill under the line
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true // Start Y-axis at zero
-                        }
-                    }
-                }
-            });
-        }
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCAwod7UdtVY-MU2yZOn15D1XAZXx4sf5A"></script>
+    <script>
 
-        // Call the renderChart function after the page loads
-        window.onload = function () {
-            renderChart();
-        };
-    </script> -->
+
+    </script>
 </body>
 
 </html>
