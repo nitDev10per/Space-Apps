@@ -4,13 +4,46 @@ let start_date;
 let end_date;
 
 let latLng;
+let loading = document.getElementById('loading');
+
+
+
 
 function initMap() {
     // Initialize map
-    const map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: -34.397, lng: 150.644 },
+    const map = new google.maps.Map(document.getElementById("maps"), {
         zoom: 8,
     });
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
+
+                // Center the map at the user's current location
+                map.setCenter(pos);
+                map.setZoom(14);
+
+                // Add a marker for the current location
+                new google.maps.Marker({
+                    position: pos,
+                    map: map,
+                    title: "Your Current Location",
+                });
+
+                // Display the current coordinates
+                document.getElementById('coordinates').innerText =
+                    'Current Location: Latitude: ' + pos.lat + ', Longitude: ' + pos.lng;
+            },
+            () => {
+                alert("Geolocation failed. Please allow location access.");
+            }
+        );
+
+    }
 
     // Search Box
     const input = document.getElementById("search-box");
@@ -24,6 +57,8 @@ function initMap() {
 
     let markers = [];
     let selectedMarker = null; // Variable to hold the currently selected marker
+
+
 
     // Listen for the event fired when the user selects a prediction and retrieve more details
     searchBox.addListener("places_changed", () => {
@@ -85,9 +120,9 @@ function initMap() {
         // Format the dates as YYYY-MM-DD
         const formattedEndDate = endDate.toISOString().split('T')[0];
         const formattedStartDate = startDate.toISOString().split('T')[0];
-        start_date=formattedStartDate;
-        end_date=formattedEndDate;
-        coordinates=[latLng.lat(),latLng.lng()]
+        start_date = formattedStartDate;
+        end_date = formattedEndDate;
+        coordinates = [latLng.lat(), latLng.lng()]
         // Update the coordinates display
         document.getElementById('coordinates').innerText =
             'Latitude: ' + latLng.lat() + ', Longitude: ' + latLng.lng() +
@@ -128,16 +163,16 @@ function initMap() {
             alert("Your browser doesn't support Geolocation.");
         }
 
-        
-   
+
+
     });
 
-     // Function to add WMS Layer
-    
+    // Function to add WMS Layer
+
 
 
     // Add the WMS layer to the map using the API response
-    
+
 }
 
 function addWmsLayer(tileUrl) {
@@ -217,9 +252,9 @@ function addWmsLayer(tileUrl) {
         // Format the dates as YYYY-MM-DD
         const formattedEndDate = endDate.toISOString().split('T')[0];
         const formattedStartDate = startDate.toISOString().split('T')[0];
-        start_date=formattedStartDate;
-        end_date=formattedEndDate;
-        coordinates=[latLng.lat(),latLng.lng()]
+        start_date = formattedStartDate;
+        end_date = formattedEndDate;
+        coordinates = [latLng.lat(), latLng.lng()]
         // Update the coordinates display
         document.getElementById('coordinates').innerText =
             'Latitude: ' + latLng.lat() + ', Longitude: ' + latLng.lng() +
@@ -260,11 +295,11 @@ function addWmsLayer(tileUrl) {
             alert("Your browser doesn't support Geolocation.");
         }
 
-        
-   
+
+
     });
     const wmsLayer = new google.maps.ImageMapType({
-        getTileUrl: function(coord, zoom) {
+        getTileUrl: function (coord, zoom) {
             const proj = map.getProjection();
             const zfactor = Math.pow(2, zoom);
 
@@ -376,14 +411,27 @@ function plotData(data) {
 
 
 function submit() {
+
+    
     // fetchWeatherData(37.7749, -122.4194)
-   
+
     // Check if elements exist
     const container = document.getElementById('container');
     const container2 = document.getElementById('container2');
     const rightBox = document.getElementById('right-box');
     const bottomBox = document.getElementById('bottom-box');
     const submitButton = document.getElementById('submit'); // Get the button element, not its inner text
+    const lefMap = document.getElementById('map');
+    const googleMap = document.getElementById('maps');
+    const cloud_cover = document.getElementById('value-slider').value;
+    loading = document.getElementById('loading');
+    
+
+
+    if(latLng===undefined || cloud_cover==0){
+        window.alert('select a location & preferred Cloud Cover');
+        return
+    }
 
     // Log elements for debugging
     console.log('Container:', container);
@@ -393,20 +441,27 @@ function submit() {
     const input = document.getElementById('coordinates').innerText;
 
     // Ensure elements are found before trying to access their styles
-    if (container && rightBox && bottomBox && submitButton) {
+    if (container && rightBox && bottomBox && submitButton && lefMap && googleMap && loading ) {
         const isSubmit = submitButton.innerText === 'Submit';
 
         rightBox.style.display = isSubmit ? 'block' : 'none';
         bottomBox.style.display = isSubmit ? 'flex' : 'none';
 
+        lefMap.style.display = isSubmit ? 'block' : 'none';
+        googleMap.style.display = isSubmit ? 'none' : 'block';
+
+        loading.style.display = isSubmit ? 'flex' : 'none';
+
         submitButton.innerText = isSubmit ? 'Back' : 'Submit'; // Change button text
+
+        
     } else {
         console.error('One or more elements not found!');
     }
 
     console.log(input);
     fetchApi();
-    
+
 }
 
 function updateValueDisplay(value) {
@@ -414,7 +469,7 @@ function updateValueDisplay(value) {
 }
 
 // async function fetchApi() {
-    
+
 
 //     // Get the coordinates from the input
 //     // const coordinates = JSON.stringify(coordinates); // Assuming the input is a JSON string
@@ -443,7 +498,7 @@ function updateValueDisplay(value) {
 //         console.log('data', data);
 //         document.getElementById('responceOutput').innerHTML = data.pixel_values_landsat[0];
 //         plotPixelValues(data.pixel_values_landsat);
-    
+
 
 //         //plotPixelValues(data.pixel_values_landsat);
 //     } catch (error) {
@@ -473,41 +528,147 @@ async function fetchApi() {
         const data = await response.json();
         console.log('data', data);  // Log data in the console fdebugging
 
-
+        showTif(data.tile_url)
         plotPixelValues(data.pixel_values_landsat);  // Call charfuncwith 
 
 
         populateTable(data.pass_dates_landsat);
+
         // await loadXML(data.metadata_path)
         await loadTextFile(data.metadata_path);
-        
+
         //addWmsLayer(data.tile_url);
         // Check if responseOutput element exists and update it
-        const responseOutput = document.getElementById('responseOutput');
-        if (responseOutput) {
-            if (data.pixel_values_landsat && data.pixel_values_landsat.length > 0) {
-                responseOutput.innerHTML = 'Pixel Values: ' + JSON.stringify(data.pixel_values_landsat);
-                
-            } else {
-                console.error('No pixel values found in the response');
-                responseOutput.innerText = 'No pixel values found.';
-            }
-        } else {
-            console.error('Element with ID "responseOutput" not found!');
-        }
-        
+        // const responseOutput = document.getElementById('responseOutput');
+        // if (responseOutput) {
+        //     if (data.pixel_values_landsat && data.pixel_values_landsat.length > 0) {
+        //         responseOutput.innerHTML = 'Pixel Values: ' + JSON.stringify(data.pixel_values_landsat);
+
+        //     } else {
+        //         console.error('No pixel values found in the response');
+        //         responseOutput.innerText = 'No pixel values found.';
+        //     }
+        // } else {
+        //     console.error('Element with ID "responseOutput" not found!');
+        // }
+
     } catch (error) {
         console.error('Error fetching data:', error);
-        const responseOutput = document.getElementById('responseOutput');
-        if (responseOutput) {
-            responseOutput.innerText = 'Error fetching data. Check console for details.';
-        }
+        // const responseOutput = document.getElementById('responseOutput');
+        // if (responseOutput) {
+        //     responseOutput.innerText = 'Error fetching data. Check console for details.';
+        // }
     }
+
+    loading.style.display = 'none';
 }
+
+function showTif(tileURL) {
+    // Initialize the map with the provided coordinates
+    var map = L.map('map').setView(coordinates, 6);  // coordinates is an array [lat, lon]
+
+    // Base layers
+    var googleSatellite = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+        attribution: 'Map data © <a href="https://www.google.com/maps">Google</a>',
+        maxZoom: 20
+    });
+
+    var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19
+    });
+
+    // Add Google Satellite as the default base layer
+    googleSatellite.addTo(map);
+
+    // Add a marker at the provided coordinates
+    var marker = L.marker(coordinates).addTo(map);  // coordinates [lat, lon]
+
+    // Optional: Add a popup to the marker
+    marker.bindPopup("<b>Selected Location</b><br>Coordinates: " + coordinates[0].toFixed(4) + ", " + coordinates[1].toFixed(4)).openPopup();
+
+    // TileJSON overlay layer
+    var tileJsonLayer = L.tileLayer(tileURL, {
+        attribution: 'Map data © <a href="https://planetarycomputer.microsoft.com/">Planetary Computer</a>',
+        maxZoom: 18,
+        tileSize: 256
+    });
+
+    // Fetch and add the GeoJSON overlay
+    fetch("https://shark-app-rk86g.ondigitalocean.app/static/Image/clipped_3x3_polygon.geojson")  // Replace with your local path
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            var gridLayer = L.geoJSON(data, {
+                style: function (feature) {
+                    return { color: "red" };  // Customize the style
+                },
+                onEachFeature: function (feature, layer) {
+                    if (feature.properties && feature.properties.name) {
+                        layer.bindPopup(feature.properties.name);  // Bind popups to features
+                    }
+                }
+            }).addTo(map);
+
+            // Layer control for GeoJSON
+            L.control.layers(null, {
+                "3X3 pixel grid": gridLayer
+            }).addTo(map);
+        })
+        .catch(error => console.log('Error loading 3X3 grid layer:', error));
+
+    fetch("https://shark-app-rk86g.ondigitalocean.app/static/Footprint/wrs2_extent.geojson")  // Replace with your local path
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            var geoJsonLayer = L.geoJSON(data, {
+                style: function (feature) {
+                    return { color: "blue" };  // Customize the style
+                },
+                onEachFeature: function (feature, layer) {
+                    if (feature.properties && feature.properties.name) {
+                        layer.bindPopup(feature.properties.name);  // Bind popups to features
+                    }
+                }
+            }).addTo(map);
+
+            // Layer control for GeoJSON
+            L.control.layers(null, {
+                "WRS-2 tile": geoJsonLayer
+            }).addTo(map);
+        })
+        .catch(error => console.log('Error loading GeoJSON:', error));
+
+    // Layer control: base layers and overlays
+    var baseLayers = {
+        "Google Satellite": googleSatellite,
+        "OpenStreetMap": osmLayer
+    };
+
+    var overlayLayers = {
+        "Landsat scene": tileJsonLayer,
+        
+    };
+    // Add layer control to the map
+    L.control.layers(baseLayers, overlayLayers).addTo(map);
+  
+
+    // Add TileJSON layer to the map by default
+    tileJsonLayer.addTo(map);
+}
+
 
 function populateTable(pass_dates_landsat) {
     const tableBody = document.getElementById('landsatTableBody');
-    
+
     pass_dates_landsat.forEach((item) => {
         const row = document.createElement('tr');
 
@@ -539,7 +700,7 @@ async function loadTextFile(path) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const text = await response.text();
         // Display the text data in the xmlData div
         document.getElementById('xmlData').textContent = text;
@@ -548,6 +709,8 @@ async function loadTextFile(path) {
         document.getElementById('xmlData').textContent = 'Error fetching text file.';
     }
 }
+
+
 
 // async function loadXML(path) {
 //      const xmlPath = "D:\NASA space apps challenge 2024\Space-Apps\static\Metadata\mtl.xml"; 
@@ -558,7 +721,7 @@ async function loadTextFile(path) {
 //         if (!response.ok) {
 //             throw new Error(`HTTP error! status: ${response.status}`);
 //         }
-        
+
 //         const xmlText = await response.text();
 //         convertXMLToJSON(xmlText);
 //     } catch (error) {
@@ -569,17 +732,17 @@ async function loadTextFile(path) {
 
 // function convertXMLToJSON(xml) {
 //     const parser = new Parser();
-    
+
 //     parser.parseString(xml, (err, result) => {
 //         if (err) {
 //             console.error("Error parsing XML:", err);
 //             document.getElementById('xmlData').textContent = 'Error parsing XML file.';
 //             return;
 //         }
-        
+
 //         const json = JSON.stringify(result, null, 2);
 //         console.log("JSON Output:", json);
-        
+
 //         // Optionally, display the JSON in an element on the page
 //         document.getElementById('jsonData').textContent = json;
 //     });
@@ -631,6 +794,9 @@ function plotPixelValues(data) {
         console.error("Canvas element for chart not found!");
     }
 }
+
+
+// window.onload(initMap());
 
 
 
