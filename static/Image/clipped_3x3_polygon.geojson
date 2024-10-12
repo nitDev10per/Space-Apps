@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "clipped_3x3_polygon",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 77.915324046283189, 29.85880632502743 ], [ 77.915324046283189, 29.859674971499835 ], [ 77.916192692755601, 29.859674971499835 ], [ 77.916192692755601, 29.85880632502743 ], [ 77.915324046283189, 29.85880632502743 ] ] ] } }
+]
+}
