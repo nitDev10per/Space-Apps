@@ -425,6 +425,7 @@ function submit() {
     const googleMap = document.getElementById('maps');
     const cloud_cover = document.getElementById('value-slider').value;
     loading = document.getElementById('loading');
+    const MapControler = document.getElementById('controler-map');
     
 
 
@@ -441,7 +442,7 @@ function submit() {
     const input = document.getElementById('coordinates').innerText;
 
     // Ensure elements are found before trying to access their styles
-    if (container && rightBox && bottomBox && submitButton && lefMap && googleMap && loading ) {
+    if (container && rightBox && bottomBox && submitButton && lefMap && googleMap && loading && MapControler) {
         const isSubmit = submitButton.innerText === 'Submit';
 
         rightBox.style.display = isSubmit ? 'block' : 'none';
@@ -450,19 +451,29 @@ function submit() {
         lefMap.style.display = isSubmit ? 'block' : 'none';
         googleMap.style.display = isSubmit ? 'none' : 'block';
 
+       
+
         loading.style.display = isSubmit ? 'flex' : 'none';
 
         submitButton.innerText = isSubmit ? 'Back' : 'Submit'; // Change button text
 
+         MapControler.style.display = isSubmit ? 'none' : 'block';
+
+
+       
         
     } else {
         console.error('One or more elements not found!');
     }
 
+  
+
     console.log(input);
     fetchApi();
 
+   
 }
+
 
 function updateValueDisplay(value) {
     document.getElementById('slider-value').innerText = value;
@@ -796,7 +807,7 @@ function plotPixelValues(data) {
 }
 
 
-// window.onload(initMap());
+window.onload(initMap());
 
 
 
