@@ -285,7 +285,7 @@ def index():
 
         ## Getting the image and downloading it 
 
-        bands_of_interest = ["red", "green", "blue", "nir08", "swir16", "swir22"]
+        bands_of_interest = ["blue", "green", "red", "nir08", "swir16", "swir22"]
 
         data = odc.stac.stac_load(
             [selected_item], bands=bands_of_interest, bbox=bbox_of_interest
@@ -455,7 +455,7 @@ def index():
         # Ensure the directory exists
         os.makedirs(absolute_path, exist_ok=True)
         
-        file_name = 'clipped_3x3_polygon.shp'
+        file_name = 'clipped_3x3_polygon.geojson'
         
         file_path = os.path.join(absolute_path, file_name)
         
@@ -521,7 +521,7 @@ def index():
                         pixel_values.append(pixel_value)
                      
                     # Create a DataFrame with band numbers and pixel values
-                    band_names = ['Red (B4)','Green (B3)','Blue (B2)','NIR (B5)','SWIR-1 (B6)', 'SWIR-2 (B7)']
+                    # band_names = ['Red (B4)','Green (B3)','Blue (B2)','NIR (B5)','SWIR-1 (B6)', 'SWIR-2 (B7)']
                     #band_names = [f'Band {i+1}' for i in range(len(pixel_values))]
                     # Specify the constants
                     multiply_constant = 0.0000275  # Example constant for multiplication
@@ -531,7 +531,7 @@ def index():
                     modified_pixel_values = [(value * multiply_constant) + add_constant for value in pixel_values]
 
                     # Create a DataFrame with band numbers and modified pixel values
-                    band_names = ['Red (B4)', 'Green (B3)', 'Blue (B2)', 'NIR (B5)', 'SWIR-1 (B6)', 'SWIR-2 (B7)']
+                    band_names = ['Blue (B2)', 'Green (B3)', 'Red (B4)', 'NIR (B5)', 'SWIR-1 (B6)', 'SWIR-2 (B7)']
                     
                     df = pd.DataFrame({'Band': band_names, 'Value': modified_pixel_values})
             
