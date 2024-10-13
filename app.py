@@ -31,7 +31,9 @@ def download_all_files():
         'static/Image/clipped_3x3_image.tif',
         'static/Image/clipped_3x3_polygon.geojson',
         'static/Footprint/wrs2_extent.geojson',
-        'static/Metadata/mtl.txt'
+        'static/Metadata/mtl.txt',
+        'static/Image/Landsat_SR_band_values.csv',
+        'static/Image/ReadMe.txt'
     ]
     
     # Define the path for the zip file
@@ -566,7 +568,24 @@ def index():
                     band_names = ['Blue (B2)', 'Green (B3)', 'Red (B4)', 'NIR (B5)', 'SWIR-1 (B6)', 'SWIR-2 (B7)']
                     
                     df = pd.DataFrame({'Band': band_names, 'Value': pixel_values})
-            
+                    
+                    # Define the relative path (e.g., "static/images/your_image.tiff")
+                    relative_path = "static/Image/"
+                    
+                    # Get the absolute path by joining Flask's root directory and the relative path
+                    absolute_path = os.path.join(app.root_path, relative_path)
+                    
+                    # Ensure the directory exists
+                    os.makedirs(absolute_path, exist_ok=True)
+                    
+                    file_name = 'Landsat_SR_band_values.csv'
+                    
+                    file_path = os.path.join(absolute_path, file_name)
+
+                    # Save DataFrame as a CSV file locally
+                    csv_path = file_path  # Specify the local file path
+                    df.to_csv(csv_path, index=False) 
+                    
             return df
 
         pixel_df = extract_pixel_values(lat, lon, output_path)
