@@ -3,10 +3,11 @@ import planetary_computer
 import odc.stac
 import matplotlib.pyplot as plt
 from pystac.extensions.eo import EOExtension as eo
-from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for
+from flask import Flask, render_template, request, jsonify, make_response, redirect, url_for, send_file
 from flask_cors import CORS
 import json
 import os
+import zipfile
 import io
 import geopandas as gpd
 import shapely.geometry
@@ -22,6 +23,31 @@ catalog = pystac_client.Client.open(
 app = Flask(__name__)
 CORS(app, resources={r"/fetch": {"origins": "http://127.0.0.1:5500"}})  # Allow only this specific origin
 
+@app.route('/download_all')
+def download_all_files():
+    # Paths to the files you want to include
+    files = [
+        'static/Image/output_image_epsg4326.tif',
+        'static/Image/clipped_3x3_image.tif',
+        'static/Image/clipped_3x3_polygon.geojson',
+        'static/Footprint/wrs2_extent.geojson',
+        'static/Metadata/mtl.txt'
+    ]
+    
+    # Define the path for the zip file
+    zip_folder = 'static/downloads'
+    zip_path = os.path.join(zip_folder, 'files.zip')
+    
+    # Create the 'downloads' folder if it doesn't exist
+    if not os.path.exists(zip_folder):
+        os.makedirs(zip_folder)
+    
+    # Create a zip file
+    with zipfile.ZipFile(zip_path, 'w') as zipf:
+        for file in files:
+            zipf.write(file, os.path.basename(file))  # Add file to the zip
+    
+    return send_file(zip_path, as_attachment=True)
 
 @app.route('/')
 def default_route():
@@ -116,7 +142,7 @@ def index():
             bbox=bbox_of_interest,
             datetime=time_of_interest,
             query = {
-                        "eo:cloud_cover": {"lt": 30},
+                        "eo:cloud_cover": {"lt": cloud_cover},
                         "platform": {"eq": "landsat-8"},
                         "landsat:wrs_path": {"eq": f"{path_wrs}"},
                         "landsat:wrs_row": {"eq": f"{row_wrs}"}}
@@ -131,7 +157,7 @@ def index():
             bbox=bbox_of_interest,
             datetime=time_of_interest,
             query = {
-                        "eo:cloud_cover": {"lt": 30},
+                        "eo:cloud_cover": {"lt": cloud_cover},
                         "platform": {"eq": "landsat-9"},
                         "landsat:wrs_path": {"eq": f"{path_wrs}"},
                         "landsat:wrs_row": {"eq": f"{row_wrs}"}}
@@ -154,7 +180,7 @@ def index():
 
         import requests
         # Download the file
-        response = requests.get(selected_item.assets['mtl.xml'].href)
+        response = requests.get(selected_item.assets['mtl.txt'].href)
         
         # Define the relative path (e.g., "static/images/your_image.tiff")
         relative_path = "static/Metadata/"
@@ -165,7 +191,7 @@ def index():
         # Ensure the directory exists
         os.makedirs(absolute_path, exist_ok=True)
         
-        file_name = 'mtl.xml'
+        file_name = 'mtl.txt'
         
         file_path = os.path.join(absolute_path, file_name)
         
@@ -294,6 +320,12 @@ def index():
         # xarray_data = data[["red", "green", "blue"]].to_array()
         xarray_data = data[bands_of_interest].to_array()
 
+        # for SR bands
+        multiply_constant = 0.0000275  # Example constant for multiplication
+        add_constant = -0.2      # Example constant for addition
+        
+        xarray_data = (xarray_data*multiply_constant)+add_constant
+        
         import xarray as xr
         import rioxarray
         
@@ -523,17 +555,17 @@ def index():
                     # Create a DataFrame with band numbers and pixel values
                     # band_names = ['Red (B4)','Green (B3)','Blue (B2)','NIR (B5)','SWIR-1 (B6)', 'SWIR-2 (B7)']
                     #band_names = [f'Band {i+1}' for i in range(len(pixel_values))]
-                    # Specify the constants
-                    multiply_constant = 0.0000275  # Example constant for multiplication
-                    add_constant = -0.2      # Example constant for addition
+                    # # Specify the constants
+                    # multiply_constant = 0.0000275  # Example constant for multiplication
+                    # add_constant = -0.2      # Example constant for addition
 
-                    # Modify pixel values by multiplying and adding the constants
-                    modified_pixel_values = [(value * multiply_constant) + add_constant for value in pixel_values]
+                    # # Modify pixel values by multiplying and adding the constants
+                    # modified_pixel_values = [(value * multiply_constant) + add_constant for value in pixel_values]
 
                     # Create a DataFrame with band numbers and modified pixel values
                     band_names = ['Blue (B2)', 'Green (B3)', 'Red (B4)', 'NIR (B5)', 'SWIR-1 (B6)', 'SWIR-2 (B7)']
                     
-                    df = pd.DataFrame({'Band': band_names, 'Value': modified_pixel_values})
+                    df = pd.DataFrame({'Band': band_names, 'Value': pixel_values})
             
             return df
 
