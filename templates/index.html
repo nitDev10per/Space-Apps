@@ -109,10 +109,12 @@
         <div class="reight-content-box" id="right-box" style="position: relative;">
             <div style="display: flex; justify-content: center; position: sticky; top: 0; right: 0; background-color: white; align-items: center; gap: 30px;">
                 <h1  >Landsat Metadata</h1>
-                <img 
-                    style=" height: 50px; width: 50px;"
+                <a href="{{ url_for('download_all_files') }}" download>
+                    <img 
+                    style=" height: 50px; width: 50px; cursor: pointer;"
                     src="{{ url_for('static', filename='images/ic_download.jpg') }}"
                     >
+                </a>
             </div>
            
             <div id=""></div>
