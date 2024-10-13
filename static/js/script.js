@@ -539,7 +539,7 @@ async function fetchApi() {
         const data = await response.json();
         console.log('data', data);  // Log data in the console fdebugging
 
-        showTif(data.tile_url)
+        await showTif(data.tile_url)
         plotPixelValues(data.pixel_values_landsat);  // Call charfuncwith 
 
 
@@ -574,7 +574,7 @@ async function fetchApi() {
     loading.style.display = 'none';
 }
 
-function showTif(tileURL) {
+async function showTif(tileURL) {
     // Initialize the map with the provided coordinates
     var map = L.map('map').setView(coordinates, 6);  // coordinates is an array [lat, lon]
 
@@ -606,7 +606,7 @@ function showTif(tileURL) {
     });
 
     // Fetch and add the GeoJSON overlay
-    fetch("https://shark-app-rk86g.ondigitalocean.app/static/Image/clipped_3x3_polygon.geojson")  // Replace with your local path
+    await fetch("https://shark-app-rk86g.ondigitalocean.app/static/Image/clipped_3x3_polygon.geojson")  // Replace with your local path
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -632,7 +632,7 @@ function showTif(tileURL) {
         })
         .catch(error => console.log('Error loading 3X3 grid layer:', error));
 
-    fetch("https://shark-app-rk86g.ondigitalocean.app/static/Footprint/wrs2_extent.geojson")  // Replace with your local path
+    await fetch("https://shark-app-rk86g.ondigitalocean.app/static/Footprint/wrs2_extent.geojson")  // Replace with your local path
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
